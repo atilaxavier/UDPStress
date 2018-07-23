@@ -89,22 +89,22 @@ ex_numbursts = 0
 ex_totalbytes = 0
 
 while True:
-	data,addr = UDPSock.recvfrom(buffer)
-	
+	try:
+		data,addr = UDPSock.recvfrom(buffer)
+		donestamp = time.time()
+	except (KeyboardInterrupt, SystemExit):
+		print("CTRL_Break or CTRL-C pressed. Exiting...")
+		break
 	if not data:
 		print("No data.")
 		break
 	else:
-		donestamp = time.time()
+		#donestamp = time.time()
 		data_len = len(data)
-		#data_str = str(data)
-		#print(data_str)
-		#print(data[0])
 
 		if data[0] == ord('#'):
 			# this is the reset, in the format: in the format: #<numbytes>#<numbursts>
 			totalbytes = 0
-			timestamp = time.time()
 			totalrcvs = 0
 			print("Reset received, clearing statistics.")
 			data_str = str(data, 'utf-8')
@@ -112,13 +112,17 @@ while True:
 			ex_numbursts = int(data_str.split('#')[2])
 			ex_totalbytes = ex_bytesperburst * ex_numbursts
 			print("Expect %d bursts with %d bytes - total: %d bytes" %(ex_numbursts, ex_bytesperburst, ex_totalbytes))
+			timestamp = time.time()
 		else:
 			totalbytes += data_len
 			totalrcvs += 1
 			tdif = donestamp-timestamp
-			if tdif == 0.0:
-				tdif = 0.0000001
-			rate = (8 / 1000) * totalbytes/(tdif)
+			#if tdif == 0.0:
+			#	tdif = 0.0000001
+			try:
+				rate = (8 / 1000) * totalbytes/(tdif)
+			except ZeroDivisionError:
+				rate = 0.0
 			print("\nRcvd: %s bytes, %s total in %s s at %s kbps" % (data_len, totalbytes, tdif, rate))
 			if data_len < ex_bytesperburst:
 				print("\nLOST %d BYTES\n" % (ex_bytesperburst-data_len))
