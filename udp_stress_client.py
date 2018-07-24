@@ -87,7 +87,7 @@ while True:
 					# a pause via time.sleep()
 					# not sure that this is needed.  Put it here to play with maybe not-overloading the
 					# windows tcp/ip stack, but not sure if it actually has any noticable effect.
-					time.sleep(0.0001)
+					#time.sleep(0.0001)
 			print("Done.")
 
 		except:
