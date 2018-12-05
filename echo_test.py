@@ -43,6 +43,7 @@ if (tcp):
 else:
 	sock = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP	
+sock.settimeout(5)
 sock.connect((addr, port))
 
 if (tcp):
